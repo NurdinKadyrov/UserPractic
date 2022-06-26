@@ -6,6 +6,7 @@ import com.company.exeptions.MyException;
 import com.company.model.User;
 import com.company.service.UserService;
 
+
 import java.util.Scanner;
 
 
@@ -13,7 +14,7 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao = new UserDao();
     Scanner scanner = new Scanner(System.in);
 
-     //Временное метот для добавление USERов.
+    //Временное метот для добавление USERов.
     public void addUser(User user) {
         userDao.getUserList().add(user);
     }
@@ -28,11 +29,8 @@ public class UserServiceImpl implements UserService {
             }
             System.out.println("Напишите ID номер:");
             int id = scanner.nextInt();
-
-            for (User u : userDao.getUserList()) {
-                if (u.getId() == id) {
-                    throw new MyException("В базе имеется такое ID !");
-                }
+            if (!searchID(id)) {
+                throw new MyException("В базе имеется такое ID !");
             }
             System.out.println("Напишите своё возраст: ");
             int age = scanner.nextInt();
@@ -50,12 +48,8 @@ public class UserServiceImpl implements UserService {
                 userDao.getUserList().add(new User(id, name, age, Gender.FEMALE));
             }
             getAllUsers();
-        } catch (NullPointerException e) {
-            System.out.println("Вы не правильно ввели данные !");
         } catch (MyException e) {
             e.printStackTrace();
-        } catch (Exception exception) {
-            System.err.println("Вы что-то пропустили !");
         }
     }
 
@@ -64,9 +58,12 @@ public class UserServiceImpl implements UserService {
         System.out.println("Напишите user ID: ");
         int id = scanner.nextInt();
         try {
+            if (searchID(id)) {
+                throw new MyException("В базе не имеется такое ID !");
+            }
             userDao.getUserList().stream().filter(x -> x.getId() == id).forEach(System.out::println);
-        } catch (NullPointerException e) {
-            System.err.println("В нашем базе не имеется такое ID !");
+        } catch (MyException e) {
+            e.printStackTrace();
         }
     }
 
@@ -75,10 +72,13 @@ public class UserServiceImpl implements UserService {
         System.out.println("Напишите user ID: ");
         int id = scanner.nextInt();
         try {
+            if (searchID(id)) {
+                throw new MyException("В базе не имеется такое ID !");
+            }
             userDao.getUserList().removeIf(x -> x.getId() == id);
             userDao.getUserList().forEach(System.out::println);
-        } catch (NullPointerException e) {
-            System.err.println("В нашем базе не имеется такое ID !");
+        } catch (MyException e) {
+            e.printStackTrace();
         }
     }
 
@@ -92,5 +92,9 @@ public class UserServiceImpl implements UserService {
         } catch (MyException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean searchID(int id) {
+       return userDao.getUserList().stream().anyMatch(x -> x.getId() == id);
     }
 }
