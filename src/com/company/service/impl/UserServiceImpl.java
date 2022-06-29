@@ -14,7 +14,7 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao = new UserDao();
     Scanner scanner = new Scanner(System.in);
 
-    //Временное метот для добавление USERов.
+    //Временное метод для добавление USERов.
     public void addUser(User user) {
         userDao.getUserList().add(user);
     }
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
             }
             System.out.println("Напишите ID номер:");
             int id = scanner.nextInt();
-            if (!searchID(id)) {
+            if (searchID(id)) {
                 throw new MyException("В базе имеется такое ID !");
             }
             System.out.println("Напишите своё возраст: ");
